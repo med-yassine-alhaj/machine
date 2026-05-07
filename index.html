@@ -90,6 +90,32 @@ nav{
 .field select option{background:var(--surface2)}
 .hint{font-size:.72rem;color:var(--muted);margin-top:.2rem}
 
+/* ── VALIDATION ── */
+.field input.valid{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(16,185,129,.12);
+}
+.field input.invalid{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(239,68,68,.12);
+}
+.field-error{
+  font-size:.72rem;color:var(--red);margin-top:.3rem;
+  display:none;align-items:center;gap:.3rem;
+  animation:fadeIn .2s ease;
+}
+.field-error.visible{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.field label .range-hint{
+  font-size:.68rem;color:var(--border);font-weight:400;margin-left:.3rem;
+}
+.form-error-banner{
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+  border-radius:10px;padding:.7rem 1rem;font-size:.82rem;color:var(--red);
+  margin-top:1.2rem;display:none;align-items:center;gap:.5rem;
+}
+.form-error-banner.visible{display:flex}
+
 /* ── RANGE SLIDER ── */
 .slider-wrap{display:flex;flex-direction:column;gap:.4rem}
 .slider-wrap label{font-size:.8rem;font-weight:600;color:var(--muted);display:flex;justify-content:space-between}
@@ -279,12 +305,16 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
     <div class="section-label">Profil</div>
     <div class="grid2">
       <div class="field">
-        <label>Âge (ans)</label>
-        <input id="age" type="number" min="15" max="42" value="24" placeholder="ex: 24"/>
+        <label>Âge (ans)<span class="range-hint">(15 – 42)</span></label>
+        <input id="age" type="number" min="15" max="42" value="24" placeholder="ex: 24"
+               data-label="Âge" oninput="validateField(this)"/>
+        <span class="field-error" id="age-err">⚠ Valeur invalide</span>
       </div>
       <div class="field">
-        <label>Taille (cm)</label>
-        <input id="height" type="number" min="155" max="210" value="180" placeholder="ex: 180"/>
+        <label>Taille (cm)<span class="range-hint">(155 – 215)</span></label>
+        <input id="height" type="number" min="155" max="215" value="180" placeholder="ex: 180"
+               data-label="Taille" oninput="validateField(this)"/>
+        <span class="field-error" id="height-err">⚠ Valeur invalide</span>
       </div>
     </div>
 
@@ -292,13 +322,16 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
     <div class="section-label">Valeur marchande</div>
     <div class="grid2">
       <div class="field">
-        <label>Valeur actuelle (M€)</label>
-        <input id="market_value_t" type="number" min="0" step="0.1" value="10" placeholder="ex: 10"/>
+        <label>Valeur actuelle (M€)<span class="range-hint">(0 – 300)</span></label>
+        <input id="market_value_t" type="number" min="0" max="300" step="0.1" value="10" placeholder="ex: 10"
+               data-label="Valeur marchande" oninput="validateField(this)"/>
+        <span class="field-error" id="market_value_t-err">⚠ Valeur invalide</span>
       </div>
       <div class="field">
-        <label>Taux de croissance</label>
-        <input id="growth_rate" type="number" step="0.01" value="0.05" placeholder="ex: 0.10"/>
-        <span class="hint">-1 à +1 (ex: 0.15 = +15%)</span>
+        <label>Taux de croissance<span class="range-hint">(-1 à +1)</span></label>
+        <input id="growth_rate" type="number" min="-1" max="1" step="0.01" value="0.05" placeholder="ex: 0.10"
+               data-label="Taux de croissance" oninput="validateField(this)"/>
+        <span class="field-error" id="growth_rate-err">⚠ Valeur invalide</span>
       </div>
     </div>
 
@@ -306,26 +339,36 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
     <div class="section-label">Statistiques de performance</div>
     <div class="grid3">
       <div class="field">
-        <label>Buts</label>
-        <input id="total_goals" type="number" min="0" value="12" placeholder="0"/>
+        <label>Buts<span class="range-hint">(0 – 150)</span></label>
+        <input id="total_goals" type="number" min="0" max="150" value="12" placeholder="0"
+               data-label="Buts" oninput="validateField(this)"/>
+        <span class="field-error" id="total_goals-err">⚠ Valeur invalide</span>
       </div>
       <div class="field">
-        <label>Passes décisives</label>
-        <input id="total_assists" type="number" min="0" value="8" placeholder="0"/>
+        <label>Passes décisives<span class="range-hint">(0 – 100)</span></label>
+        <input id="total_assists" type="number" min="0" max="100" value="8" placeholder="0"
+               data-label="Passes décisives" oninput="validateField(this)"/>
+        <span class="field-error" id="total_assists-err">⚠ Valeur invalide</span>
       </div>
       <div class="field">
-        <label>Matchs joués</label>
-        <input id="matches_count" type="number" min="0" value="30" placeholder="0"/>
+        <label>Matchs joués<span class="range-hint">(0 – 70)</span></label>
+        <input id="matches_count" type="number" min="0" max="70" value="30" placeholder="0"
+               data-label="Matchs joués" oninput="validateField(this)"/>
+        <span class="field-error" id="matches_count-err">⚠ Valeur invalide</span>
       </div>
     </div>
     <div class="grid2">
       <div class="field">
-        <label>Minutes totales</label>
-        <input id="total_minutes" type="number" min="0" value="2500" placeholder="ex: 2700"/>
+        <label>Minutes totales<span class="range-hint">(0 – 6 300)</span></label>
+        <input id="total_minutes" type="number" min="0" max="6300" value="2500" placeholder="ex: 2700"
+               data-label="Minutes totales" oninput="validateField(this)"/>
+        <span class="field-error" id="total_minutes-err">⚠ Valeur invalide</span>
       </div>
       <div class="field">
-        <label>Buts+Passes/90min</label>
-        <input id="goal_assist_per_90" type="number" min="0" step="0.01" value="0.65" placeholder="ex: 0.70"/>
+        <label>Buts+Passes/90min<span class="range-hint">(0 – 5)</span></label>
+        <input id="goal_assist_per_90" type="number" min="0" max="5" step="0.01" value="0.65" placeholder="ex: 0.70"
+               data-label="Buts+Passes/90min" oninput="validateField(this)"/>
+        <span class="field-error" id="goal_assist_per_90-err">⚠ Valeur invalide</span>
       </div>
     </div>
 
@@ -338,6 +381,9 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
     </div>
     <p class="hint" style="margin-top:.5rem">0 = petite ligue uniquement · 1 = top 5 championnats uniquement</p>
 
+    <div class="form-error-banner" id="formBanner">
+      <span>⚠</span><span id="formBannerMsg">Veuillez corriger les erreurs avant de continuer.</span>
+    </div>
     <button class="btn-predict" id="btnPredict" onclick="predict()">
       <span>🔮</span> Prédire le potentiel
     </button>
@@ -393,6 +439,83 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
 <script>
 const API = "http://localhost:5000";
 
+// ─── Limites de validation ─────────────────────────────────────────────
+const FIELD_RULES = {
+  age:                { min:15,   max:42,   label:'Âge' },
+  height:             { min:155,  max:215,  label:'Taille' },
+  market_value_t:     { min:0,    max:300,  label:'Valeur marchande' },
+  growth_rate:        { min:-1,   max:1,    label:'Taux de croissance' },
+  total_goals:        { min:0,    max:150,  label:'Buts' },
+  total_assists:      { min:0,    max:100,  label:'Passes décisives' },
+  matches_count:      { min:0,    max:70,   label:'Matchs joués' },
+  total_minutes:      { min:0,    max:6300, label:'Minutes totales' },
+  goal_assist_per_90: { min:0,    max:5,    label:'Buts+Passes/90min' },
+};
+
+// ─── Validation d'un champ unique ─────────────────────────────────────
+function validateField(input) {
+  const id    = input.id;
+  const rule  = FIELD_RULES[id];
+  if (!rule) return true;
+
+  const val = parseFloat(input.value);
+  const errEl = document.getElementById(id + '-err');
+  const isEmpty = input.value.trim() === '';
+
+  let ok = true;
+  let msg = '';
+
+  if (isEmpty || isNaN(val)) {
+    ok = false;
+    msg = `⚠ Ce champ est obligatoire.`;
+  } else if (val < rule.min) {
+    ok = false;
+    msg = `⚠ Minimum : ${rule.min}`;
+  } else if (val > rule.max) {
+    ok = false;
+    msg = `⚠ Maximum : ${rule.max}`;
+    // Clamp automatique après 600ms sans frappe
+    clearTimeout(input._clampTimer);
+    input._clampTimer = setTimeout(() => {
+      input.value = rule.max;
+      validateField(input);
+    }, 600);
+  }
+
+  input.classList.toggle('valid',   ok);
+  input.classList.toggle('invalid', !ok);
+  if (errEl) {
+    errEl.textContent = msg;
+    errEl.classList.toggle('visible', !ok);
+  }
+  return ok;
+}
+
+// ─── Validation globale du formulaire ─────────────────────────────────
+function validateForm() {
+  let allOk = true;
+  const errors = [];
+  Object.keys(FIELD_RULES).forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !validateField(el)) {
+      allOk = false;
+      errors.push(FIELD_RULES[id].label);
+    }
+  });
+  const banner    = document.getElementById('formBanner');
+  const bannerMsg = document.getElementById('formBannerMsg');
+  if (!allOk) {
+    bannerMsg.textContent = 'Champ(s) invalide(s) : ' + errors.join(', ') + '.';
+    banner.classList.add('visible');
+    // Scroll vers la 1re erreur
+    const firstInvalid = document.querySelector('.field input.invalid');
+    if (firstInvalid) firstInvalid.scrollIntoView({ behavior:'smooth', block:'center' });
+  } else {
+    banner.classList.remove('visible');
+  }
+  return allOk;
+}
+
 // ─── Position picker ───────────────────────────────────────────────────
 document.querySelectorAll('.pos-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -415,7 +538,7 @@ function showToast(msg,err=false){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast'+(err?' error':'');
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(()=>t.classList.remove('show'),3500);
 }
 const EMOJIS={Élevé:'🌟',Moyen:'⚽',Faible:'📉'};
 const CLASS_CSS={Élevé:'eleve',Moyen:'moyen',Faible:'faible'};
@@ -423,11 +546,13 @@ const BAR_CSS={Élevé:'bar-eleve',Moyen:'bar-moyen',Faible:'bar-faible'};
 
 // ─── Prédiction ───────────────────────────────────────────────────────
 async function predict(){
+  // Validation avant envoi
+  if (!validateForm()) return;
+
   const btn=document.getElementById('btnPredict');
   const card=document.getElementById('resultCard');
   const probaCard=document.getElementById('probaCard');
 
-  // Lecture des valeurs
   const position=document.querySelector('.pos-btn.active').dataset.val;
   const foot=document.querySelector('.foot-btn.active').dataset.val;
 
@@ -446,7 +571,6 @@ async function predict(){
     foot:             foot,
   };
 
-  // UI: loading
   btn.disabled=true;
   card.className='result-card loading-state';
   probaCard.style.display='none';
@@ -460,12 +584,10 @@ async function predict(){
     if(!res.ok) throw new Error(`Erreur serveur ${res.status}`);
     const data=await res.json();
     if(data.error) throw new Error(data.error);
-
-    // Afficher résultat
     showResult(data);
   }catch(e){
     card.className='result-card idle';
-    showToast('❌ '+e.message,true);
+    showToast('Erreur : '+e.message,true);
   }finally{
     btn.disabled=false;
   }
