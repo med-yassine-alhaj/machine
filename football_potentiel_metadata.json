@@ -1,0 +1,82 @@
+{
+  "model_info": {
+    "type": "GradientBoostingClassifier",
+    "n_estimators": 200,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "pipeline": [
+      "StandardScaler",
+      "GradientBoostingClassifier"
+    ]
+  },
+  "classes": [
+    "Faible",
+    "Moyen",
+    "Élevé"
+  ],
+  "feature_columns": [
+    "age",
+    "height",
+    "total_goals",
+    "total_assists",
+    "total_minutes",
+    "goal_assist_per_90",
+    "matches_count",
+    "top_league_ratio",
+    "market_value_t",
+    "growth_rate",
+    "total_goals_missing",
+    "total_assists_missing",
+    "total_minutes_missing",
+    "matches_count_missing",
+    "goal_assist_per_90_missing",
+    "top_league_ratio_missing",
+    "market_value_t_missing",
+    "growth_rate_missing",
+    "foot_missing",
+    "pos_Attack",
+    "pos_Defender",
+    "pos_Goalkeeper",
+    "pos_Midfield",
+    "foot_left",
+    "foot_right"
+  ],
+  "pos_columns": [
+    "pos_Attack",
+    "pos_Defender",
+    "pos_Goalkeeper",
+    "pos_Midfield"
+  ],
+  "foot_columns": [
+    "foot_left",
+    "foot_right"
+  ],
+  "missing_indicators": [
+    "total_goals_missing",
+    "total_assists_missing",
+    "total_minutes_missing",
+    "matches_count_missing",
+    "goal_assist_per_90_missing",
+    "top_league_ratio_missing",
+    "market_value_t_missing",
+    "growth_rate_missing",
+    "foot_missing"
+  ],
+  "medians_for_imputation": {
+    "total_goals": 6.0,
+    "total_assists": 3.0,
+    "total_minutes": 2688.0,
+    "goal_assist_per_90": 0.3888848880567157,
+    "matches_count": 17.0,
+    "top_league_ratio": 0.0,
+    "market_value_t": 50000.0,
+    "growth_rate": -37.499906250234375,
+    "age": 27.72347707049966,
+    "height": 180.0
+  },
+  "performance": {
+    "test_accuracy": 0.9765,
+    "test_f1_macro": 0.9643
+  }
+}

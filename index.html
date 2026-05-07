@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FootballIQ — Prédicteur de Potentiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface2:#1f2937;
+  --border:#2d3748;
+  --accent:#3b82f6;
+  --accent2:#6366f1;
+  --green:#10b981;
+  --yellow:#f59e0b;
+  --red:#ef4444;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 2.5rem;
+  background:rgba(17,24,39,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:.7rem;font-size:1.3rem;font-weight:800}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.badge{background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:.65rem;font-weight:700;padding:.25rem .6rem;border-radius:20px;letter-spacing:.05em}
+
+/* ── HERO ── */
+.hero{
+  text-align:center;padding:4rem 2rem 2rem;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(59,130,246,.15) 0%,transparent 70%);
+}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.15;
+  background:linear-gradient(135deg,#fff 0%,var(--accent) 60%,var(--accent2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:1.1rem;margin-top:.8rem;max-width:560px;margin-left:auto;margin-right:auto}
+.stats-row{display:flex;justify-content:center;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .val{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .lbl{color:var(--muted);font-size:.8rem;margin-top:.2rem}
+
+/* ── MAIN LAYOUT ── */
+.main{display:grid;grid-template-columns:1fr 400px;gap:2rem;max-width:1200px;margin:2rem auto;padding:0 2rem}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* ── FORM CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem}
+.card-title{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.card-title span{color:var(--muted);font-weight:400;font-size:.9rem}
+
+/* ── SECTIONS ── */
+.section-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--accent);margin-bottom:1rem;margin-top:1.5rem;
+  display:flex;align-items:center;gap:.5rem
+}
+.section-label::before{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── GRID ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+
+/* ── INPUT ── */
+.field{display:flex;flex-direction:column;gap:.4rem}
+.field label{font-size:.8rem;font-weight:600;color:var(--muted)}
+.field input,.field select{
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:.75rem 1rem;font-size:.95rem;font-family:inherit;
+  transition:border-color .2s,box-shadow .2s;outline:none;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.15)
+}
+.field input::placeholder{color:var(--border)}
+.field select option{background:var(--surface2)}
+.hint{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+
+/* ── RANGE SLIDER ── */
+.slider-wrap{display:flex;flex-direction:column;gap:.4rem}
+.slider-wrap label{font-size:.8rem;font-weight:600;color:var(--muted);display:flex;justify-content:space-between}
+.slider-wrap label span{color:var(--text);font-weight:700}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  background:var(--border);border-radius:10px;outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:50%;cursor:pointer;box-shadow:0 0 8px rgba(59,130,246,.5)
+}
+
+/* ── POSITION PICKER ── */
+.pos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.pos-btn{
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;
+  padding:.7rem .4rem;text-align:center;cursor:pointer;transition:all .2s;
+}
+.pos-btn input[type=radio]{display:none}
+.pos-btn .icon{font-size:1.4rem;display:block;margin-bottom:.3rem}
+.pos-btn .name{font-size:.72rem;font-weight:600;color:var(--muted)}
+.pos-btn.active{background:rgba(59,130,246,.15);border-color:var(--accent);color:#fff}
+.pos-btn.active .name{color:var(--text)}
+
+/* ── FOOT PICKER ── */
+.foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.foot-btn{
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;
+  padding:.6rem;text-align:center;cursor:pointer;transition:all .2s;font-size:.82rem;font-weight:600;color:var(--muted);
+}
+.foot-btn input[type=radio]{display:none}
+.foot-btn.active{background:rgba(99,102,241,.15);border-color:var(--accent2);color:var(--text)}
+
+/* ── SUBMIT ── */
+.btn-predict{
+  width:100%;padding:1rem;margin-top:1.8rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:1rem;font-weight:700;border:none;border-radius:12px;
+  cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.03em;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-predict:hover{opacity:.9}
+.btn-predict:active{transform:scale(.98)}
+.btn-predict:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── RESULT PANEL ── */
+.result-panel{display:flex;flex-direction:column;gap:1.5rem}
+
+.result-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:2rem;text-align:center;min-height:220px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;transition:all .4s;
+}
+.result-card.idle .idle-msg{display:flex;flex-direction:column;align-items:center;gap:.8rem;color:var(--muted)}
+.result-card.idle .idle-msg .ico{font-size:3rem;opacity:.4}
+.result-card .loading{display:none;flex-direction:column;align-items:center;gap:1rem}
+.result-card.loading-state .loading{display:flex}
+.result-card.loading-state .idle-msg,.result-card.loading-state .result-content{display:none}
+.result-card .result-content{display:none;flex-direction:column;align-items:center;gap:.8rem;width:100%}
+.result-card.has-result .result-content{display:flex}
+.result-card.has-result .idle-msg{display:none}
+
+.glow-ring{
+  width:110px;height:110px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;margin-bottom:.5rem;
+}
+.glow-ring::before{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  background:conic-gradient(var(--ring-color) 0%,transparent 60%);
+  animation:spin 3s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.glow-ring .inner{
+  width:100px;height:100px;border-radius:50%;
+  background:var(--surface);display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;z-index:1;position:relative;
+}
+.result-label{font-size:1.8rem;font-weight:900}
+.confidence-bar-wrap{width:100%;margin-top:.5rem}
+.confidence-bar-wrap .bar-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
+.bar-bg{background:var(--border);border-radius:10px;height:8px;overflow:hidden}
+.bar-fg{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* proba bars */
+.proba-list{display:flex;flex-direction:column;gap:.8rem;width:100%}
+.proba-item{}
+.proba-item .pi-top{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.3rem}
+.proba-item .pi-name{font-weight:600}
+.proba-item .pi-val{color:var(--muted)}
+
+/* ── SPINNER ── */
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite}
+
+/* ── TIPS CARD ── */
+.tips{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.tips h3{font-size:.9rem;font-weight:700;margin-bottom:1rem;color:var(--muted)}
+.tip-item{display:flex;gap:.8rem;align-items:flex-start;margin-bottom:.9rem;font-size:.83rem;color:var(--muted)}
+.tip-item .icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:3rem}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:.9rem 1.2rem;font-size:.85rem;font-weight:500;
+  transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* ── GLOW colors ── */
+.eleve .result-label{color:var(--green)}
+.eleve{--ring-color:var(--green);border-color:rgba(16,185,129,.3)}
+.moyen .result-label{color:var(--yellow)}
+.moyen{--ring-color:var(--yellow);border-color:rgba(245,158,11,.3)}
+.faible .result-label{color:var(--red)}
+.faible{--ring-color:var(--red);border-color:rgba(239,68,68,.3)}
+
+.bar-eleve{background:linear-gradient(90deg,#10b981,#34d399)}
+.bar-moyen{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.bar-faible{background:linear-gradient(90deg,#ef4444,#f87171)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⚽</div>
+    FootballIQ
+  </div>
+  <div class="badge">Gradient Boosting • F1-macro 96%</div>
+</nav>
+
+<div class="hero">
+  <h1>Prédicteur de Potentiel<br/>de Footballeur</h1>
+  <p>Analysez les statistiques d'un joueur et découvrez son potentiel grâce au Machine Learning</p>
+  <div class="stats-row">
+    <div class="stat"><div class="val">78k+</div><div class="lbl">Joueurs analysés</div></div>
+    <div class="stat"><div class="val">97.6%</div><div class="lbl">Précision</div></div>
+    <div class="stat"><div class="val">25</div><div class="lbl">Features</div></div>
+    <div class="stat"><div class="val">3</div><div class="lbl">Classes</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- ── FORMULAIRE ── -->
+  <div class="card">
+    <div class="card-title">📋 Données du joueur <span>— Remplissez tous les champs</span></div>
+
+    <!-- Position -->
+    <div class="section-label">Position</div>
+    <div class="pos-grid" id="posGrid">
+      <label class="pos-btn active" data-val="Attack">
+        <input type="radio" name="position" value="Attack" checked/>
+        <span class="icon">⚡</span><span class="name">Attaquant</span>
+      </label>
+      <label class="pos-btn" data-val="Midfield">
+        <input type="radio" name="position" value="Midfield"/>
+        <span class="icon">🎯</span><span class="name">Milieu</span>
+      </label>
+      <label class="pos-btn" data-val="Defender">
+        <input type="radio" name="position" value="Defender"/>
+        <span class="icon">🛡️</span><span class="name">Défenseur</span>
+      </label>
+      <label class="pos-btn" data-val="Goalkeeper">
+        <input type="radio" name="position" value="Goalkeeper"/>
+        <span class="icon">🥅</span><span class="name">Gardien</span>
+      </label>
+    </div>
+
+    <!-- Pied -->
+    <div class="section-label">Pied préféré</div>
+    <div class="foot-grid" id="footGrid">
+      <label class="foot-btn active" data-val="right"><input type="radio" name="foot" value="right" checked/> Droit 🦶</label>
+      <label class="foot-btn" data-val="left"><input type="radio" name="foot" value="left"/> Gauche 🦶</label>
+      <label class="foot-btn" data-val="both"><input type="radio" name="foot" value="both"/> Les deux ⚖️</label>
+    </div>
+
+    <!-- Profil -->
+    <div class="section-label">Profil</div>
+    <div class="grid2">
+      <div class="field">
+        <label>Âge (ans)</label>
+        <input id="age" type="number" min="15" max="42" value="24" placeholder="ex: 24"/>
+      </div>
+      <div class="field">
+        <label>Taille (cm)</label>
+        <input id="height" type="number" min="155" max="210" value="180" placeholder="ex: 180"/>
+      </div>
+    </div>
+
+    <!-- Valeur marchande -->
+    <div class="section-label">Valeur marchande</div>
+    <div class="grid2">
+      <div class="field">
+        <label>Valeur actuelle (M€)</label>
+        <input id="market_value_t" type="number" min="0" step="0.1" value="10" placeholder="ex: 10"/>
+      </div>
+      <div class="field">
+        <label>Taux de croissance</label>
+        <input id="growth_rate" type="number" step="0.01" value="0.05" placeholder="ex: 0.10"/>
+        <span class="hint">-1 à +1 (ex: 0.15 = +15%)</span>
+      </div>
+    </div>
+
+    <!-- Stats de performance -->
+    <div class="section-label">Statistiques de performance</div>
+    <div class="grid3">
+      <div class="field">
+        <label>Buts</label>
+        <input id="total_goals" type="number" min="0" value="12" placeholder="0"/>
+      </div>
+      <div class="field">
+        <label>Passes décisives</label>
+        <input id="total_assists" type="number" min="0" value="8" placeholder="0"/>
+      </div>
+      <div class="field">
+        <label>Matchs joués</label>
+        <input id="matches_count" type="number" min="0" value="30" placeholder="0"/>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>Minutes totales</label>
+        <input id="total_minutes" type="number" min="0" value="2500" placeholder="ex: 2700"/>
+      </div>
+      <div class="field">
+        <label>Buts+Passes/90min</label>
+        <input id="goal_assist_per_90" type="number" min="0" step="0.01" value="0.65" placeholder="ex: 0.70"/>
+      </div>
+    </div>
+
+    <!-- Ratio top ligue -->
+    <div class="section-label">Niveau de compétition</div>
+    <div class="slider-wrap">
+      <label>Ratio top ligue <span id="ratioVal">0.60</span></label>
+      <input type="range" id="top_league_ratio" min="0" max="1" step="0.05" value="0.6"
+             oninput="document.getElementById('ratioVal').textContent=parseFloat(this.value).toFixed(2)"/>
+    </div>
+    <p class="hint" style="margin-top:.5rem">0 = petite ligue uniquement · 1 = top 5 championnats uniquement</p>
+
+    <button class="btn-predict" id="btnPredict" onclick="predict()">
+      <span>🔮</span> Prédire le potentiel
+    </button>
+  </div>
+
+  <!-- ── RÉSULTAT ── -->
+  <div class="result-panel">
+    <div class="result-card idle" id="resultCard">
+      <!-- idle -->
+      <div class="idle-msg">
+        <div class="ico">🏟️</div>
+        <div>Remplissez le formulaire<br/>et lancez la prédiction</div>
+      </div>
+      <!-- loading -->
+      <div class="loading">
+        <div class="spinner"></div>
+        <div style="color:var(--muted);font-size:.9rem">Analyse en cours…</div>
+      </div>
+      <!-- result -->
+      <div class="result-content" id="resultContent">
+        <div class="glow-ring" id="glowRing">
+          <div class="inner" id="resultEmoji">⚽</div>
+        </div>
+        <div class="result-label" id="resultLabel">—</div>
+        <div style="color:var(--muted);font-size:.85rem" id="resultSub"></div>
+        <div class="confidence-bar-wrap">
+          <div class="bar-label"><span>Confiance</span><span id="confVal">—</span></div>
+          <div class="bar-bg"><div class="bar-fg" id="confBar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Probabilités -->
+    <div class="card" id="probaCard" style="display:none">
+      <div class="card-title">📊 Probabilités par classe</div>
+      <div class="proba-list" id="probaList"></div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips">
+      <h3>💡 Comment interpréter</h3>
+      <div class="tip-item"><span class="icon">🟢</span><span><strong>Élevé</strong> — Joueur à fort potentiel, valeur marchande croissante et stats supérieures à la moyenne (top 2.6%)</span></div>
+      <div class="tip-item"><span class="icon">🟡</span><span><strong>Moyen</strong> — Joueur solide avec un potentiel de progression, performances correctes (27%)</span></div>
+      <div class="tip-item"><span class="icon">🔴</span><span><strong>Faible</strong> — Joueur en fin de carrière ou stats insuffisantes pour les top clubs (70%)</span></div>
+      <div class="tip-item"><span class="icon">🤖</span><span>Modèle : <strong>Gradient Boosting</strong> entraîné sur 78 477 joueurs — F1-macro 96.4%</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>FootballIQ · Modèle ML — Objectif 2 Modélisation · 2026</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "http://localhost:5000";
+
+// ─── Position picker ───────────────────────────────────────────────────
+document.querySelectorAll('.pos-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    btn.querySelector('input').checked=true;
+  });
+});
+document.querySelectorAll('.foot-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.foot-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    btn.querySelector('input').checked=true;
+  });
+});
+
+// ─── Helpers ──────────────────────────────────────────────────────────
+function getVal(id){return parseFloat(document.getElementById(id).value)||0}
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(err?' error':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+const EMOJIS={Élevé:'🌟',Moyen:'⚽',Faible:'📉'};
+const CLASS_CSS={Élevé:'eleve',Moyen:'moyen',Faible:'faible'};
+const BAR_CSS={Élevé:'bar-eleve',Moyen:'bar-moyen',Faible:'bar-faible'};
+
+// ─── Prédiction ───────────────────────────────────────────────────────
+async function predict(){
+  const btn=document.getElementById('btnPredict');
+  const card=document.getElementById('resultCard');
+  const probaCard=document.getElementById('probaCard');
+
+  // Lecture des valeurs
+  const position=document.querySelector('.pos-btn.active').dataset.val;
+  const foot=document.querySelector('.foot-btn.active').dataset.val;
+
+  const payload={
+    age:              getVal('age'),
+    height:           getVal('height'),
+    total_goals:      getVal('total_goals'),
+    total_assists:    getVal('total_assists'),
+    total_minutes:    getVal('total_minutes'),
+    goal_assist_per_90: getVal('goal_assist_per_90'),
+    matches_count:    getVal('matches_count'),
+    top_league_ratio: getVal('top_league_ratio'),
+    market_value_t:   getVal('market_value_t'),
+    growth_rate:      getVal('growth_rate'),
+    main_position:    position,
+    foot:             foot,
+  };
+
+  // UI: loading
+  btn.disabled=true;
+  card.className='result-card loading-state';
+  probaCard.style.display='none';
+
+  try{
+    const res=await fetch(`${API}/predict`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload),
+    });
+    if(!res.ok) throw new Error(`Erreur serveur ${res.status}`);
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+
+    // Afficher résultat
+    showResult(data);
+  }catch(e){
+    card.className='result-card idle';
+    showToast('❌ '+e.message,true);
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+function showResult(data){
+  const {prediction, probabilities, confidence, classes}=data;
+  const card=document.getElementById('resultCard');
+  const probaCard=document.getElementById('probaCard');
+
+  // Emoji + label + couleur
+  document.getElementById('resultEmoji').textContent=EMOJIS[prediction]||'⚽';
+  document.getElementById('resultLabel').textContent=prediction;
+  document.getElementById('resultSub').textContent=
+    prediction==='Élevé' ? 'Haut potentiel confirmé 🔥' :
+    prediction==='Moyen' ? 'Potentiel de progression 📈' :
+    'Potentiel limité 🔻';
+
+  // Confiance
+  document.getElementById('confVal').textContent=confidence+'%';
+  const bar=document.getElementById('confBar');
+  bar.style.width='0%';
+  bar.className='bar-fg '+BAR_CSS[prediction];
+  setTimeout(()=>bar.style.width=confidence+'%',50);
+
+  // Classe CSS sur la card
+  const css=CLASS_CSS[prediction]||'';
+  card.className='result-card has-result '+css;
+  card.querySelector('.glow-ring').style.setProperty('--ring-color',
+    prediction==='Élevé'?'var(--green)':prediction==='Moyen'?'var(--yellow)':'var(--red)');
+
+  // Probabilités
+  const list=document.getElementById('probaList');
+  list.innerHTML='';
+  const sorted=Object.entries(probabilities).sort((a,b)=>b[1]-a[1]);
+  sorted.forEach(([cls,prob])=>{
+    const pct=Math.round(prob*100*100)/100;
+    const barCls=BAR_CSS[cls]||'';
+    list.innerHTML+=`
+      <div class="proba-item">
+        <div class="pi-top">
+          <span class="pi-name">${EMOJIS[cls]||''} ${cls}</span>
+          <span class="pi-val">${pct}%</span>
+        </div>
+        <div class="bar-bg">
+          <div class="bar-fg ${barCls}" style="width:${pct}%;transition:width .8s ease"></div>
+        </div>
+      </div>`;
+  });
+  probaCard.style.display='block';
+}
+</script>
+</body>
+</html>
